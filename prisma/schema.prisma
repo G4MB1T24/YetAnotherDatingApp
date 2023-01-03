@@ -17,7 +17,8 @@ model User {
   age        Int
   dateJoined DateTime? @default(now())
   Post       Post[]
-  isAdmin    Boolean? @default(false)
+  isAdmin    Boolean?  @default(false)
+  password   String    
 }
 
 model Post {
