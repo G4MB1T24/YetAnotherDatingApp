@@ -12,5 +12,5 @@ export default async function handler(
 ) {
   console.log(req.method)
 
-  res.status(200).json({ name: "Jhone Doe" });
+  // res.status(200).json({ name: "Jhone Doe" });
 }

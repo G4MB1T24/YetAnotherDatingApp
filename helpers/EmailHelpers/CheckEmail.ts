@@ -1,6 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma/db";
 
 async function CheckIfExists(email: string): Promise<boolean> {
   const user = await prisma.user.findFirst({
@@ -12,4 +10,4 @@ async function CheckIfExists(email: string): Promise<boolean> {
   return false;
 }
 
-export default CheckIfExists
+export default CheckIfExists;

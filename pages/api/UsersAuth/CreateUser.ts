@@ -1,16 +1,16 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { prisma } from "../../../prisma/db";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
-import Hasher from "../../../helpers/SaltGen";
-import CheckIfExists from "../../../helpers/CheckEmail";
+import Hasher from "../../../helpers/Auth/SaltGen";
+import CheckIfExists from "../../../helpers/EmailHelpers/CheckEmail";
+import TokenGen from "../../../helpers/Auth/TokenGen";
+import isValidEmail from "../../../helpers/EmailHelpers/EmailReg";
 
 type ResAttributes = {
   msg?: string;
-  UserObj?: any
+  UserObj?: string;
   success?: boolean;
+  Token?: string;
 };
-
-const prisma = new PrismaClient();
 
 export default async function handler(
   req: NextApiRequest,
@@ -24,15 +24,12 @@ export default async function handler(
           return res.json({ msg: "Please fill all the fields" });
         }
 
-        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-        if (!emailRegex.test(email)) {
-          return res.json({ msg: "Please enter a valid email" });
-        }
+        if (!isValidEmail(email))
+          return res.status(404).json({ msg: "Invalid Email", success: false });
 
         let emailCheck = await CheckIfExists(email);
-        if (emailCheck == true) {
+        if (emailCheck)
           return res.status(400).json({ msg: "Email already exists" });
-        }
 
         if (age < 18) {
           return res.json({ msg: "Age requirement dissatisfied" });
@@ -48,7 +45,11 @@ export default async function handler(
             password: HashedPass,
           },
         });
-        res.send({ UserObj: user.id, success: true });
+        res.json({
+          UserObj: user.id,
+          success: true,
+          Token: TokenGen(user.id, user.email),
+        });
         break;
 
       default:
