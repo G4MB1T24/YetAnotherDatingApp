@@ -2,7 +2,6 @@ import { prisma } from "../../../prisma/db";
 import jwtAuth from "../../../helpers/Auth/jwtAuth";
 import { NextApiRequest, NextApiResponse } from "next";
 
-
 const CreatePosts = async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case "POST":
@@ -17,10 +16,11 @@ const CreatePosts = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.json({ msg: "Please fill all the fields" });
 
       try {
-        const userJWT = await jwtAuth(req, res).catch((error) => {
-          console.error(error);
-          return res.status(500).json({ msg: "invalid id", success: false });
-        });
+        const userJWT: any = await jwtAuth(req, res);
+
+        if (!userJWT) {
+          return res.status(401).json({ msg: "Unauthorized", success: false });
+        }
 
         const posts = await prisma.post.create({
           data: {
