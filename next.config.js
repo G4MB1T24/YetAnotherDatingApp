@@ -2,7 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    runtime: 'nodejs'//'experimental-edge', //  (default) | 'experimental-edge'
+    runtime: 'nodejs',//'experimental-edge', //  (default) | 'experimental-edge'
+    appDir: true
   }
 }
 
